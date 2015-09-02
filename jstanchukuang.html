@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>js弹出框对象封装lx</title>
+		<style>
+		*{margin: 0;padding: 0;}
+			.dialogBox{background: #EEEEEE;border: 1px solid #333333;position: absolute;z-index: 3;}
+			.dialogtitle{width: 100%;background: #666666;height: 42px;}
+			.dialogtitle{color: #FFFFFF;text-align: center;}
+			.dialogclose{border: none;color: #FFFFFF;background: none;position: absolute;right: 8px;top: 10px;}
+			.dialogcon{width: 100%;margin: 5%;}
+			#mark{position: absolute;left: 0;top: 0;width: 100%;height: 100%;background: black;opacity: 0.1;z-index: 1;display: none;}
+			#btn{z-index: 2;position: relative;}
+		</style>
+	</head>
+	<body>
+		<button id="btn">点击</button>
+		<div id="mark"></div>
+		<script src="js/jquery.js"></script>
+		<script type="text/javascript">
+			document.getElementById("btn").onclick=function(){
+				var _new=new dialog({
+					title:"标题",
+			 		content:"第一个窗口",
+			 		drag:true,
+					width:200,/*Math.random()*200+200,
+					height:Math.random()*200+200,*/
+					top:/*Math.random()*200*/200,
+					left:/*Math.random()*200*/200})
+				var mak=document.getElementById("mark");
+				mark.style.display="block";
+			}
+		
+			function dialog(opt){
+			  this.config={/*使用this,config将变为dailog的属性*/
+			 		title:"title",
+			 		content:"",
+			 		drag:true,
+					width:300,
+					height:250,
+					top:0,
+					left:0
+				}
+			  for (var i in opt) {
+			  	this.config[i]=opt[i];
+			  }
+			  this.dialogBox=null;
+			  this.dialogclose=null;
+			  this.dialogtitle=null;
+			  this.body=document.getElementsByTagName("body")[0];
+			  this.create();
+			}
+			
+			dialog.prototype={
+				create:function(config,opt){
+				var dialogBox=document.createElement("div");
+				var dialogclose=document.createElement("button");
+				var dialogtitle=document.createElement("div");
+				var dialogh1=document.createElement("h1");
+				var dialogcon=document.createElement("div")
+
+				var that=this;
+				dialogBox.setAttribute("class","dialogBox");
+				dialogclose.setAttribute("class","dialogclose");
+				dialogtitle.setAttribute("class","dialogtitle");
+				dialogcon.setAttribute("class","dialogcon");
+				dialogBox.style.width=this.config.width+'px';
+				dialogBox.style.height=this.config.height+'px';
+				dialogBox.style.top=this.config.top+'px';
+				dialogBox.style.left=this.config.left+'px';
+				dialogtitle.appendChild(dialogclose);
+				dialogtitle.appendChild(dialogh1);
+				dialogBox.appendChild(dialogtitle);
+				dialogBox.appendChild(dialogcon);
+				this.body.appendChild(dialogBox);
+				dialogcon.innerHTML=this.config.content;
+				dialogh1.innerHTML=this.config.title;
+				dialogclose.innerHTML="关闭";
+				
+				this.dialogBox=dialogBox;
+				this.dialogclose=dialogclose;
+				this.dialogtitle=dialogtitle;
+				
+				this.dialogclose.onclick=function(){
+					that._close()
+					mark.style.display="none"
+				}
+				if(this.config.drag){
+					this.theDrag();
+				}
+				},
+				
+				_close:function(){
+				   this.body.removeChild(this.dialogBox);
+				},
+				
+				theDrag:function(){
+				var that=this;
+					/*this.dialogtitle.onmousedown=function(event){
+					var	boxP={left:that.dialogBox.offsetLeft,top:that.dialogBox.offsetTop};
+                    var DmouseP={left:event.clientX,top:event.clientY};
+						
+					document.onmousemove=function(event){
+                    var MmouseP={left:event.clientX,top:event.clientY};
+					var	thisP={left:MmouseP.left-DmouseP.left+boxP.left+"px",
+                               top:MmouseP.top-DmouseP.top+boxP.top+"px"};
+                   			 	that.dialogBox.style.left=thisP.left;
+                    			that.dialogBox.style.top=thisP.top;
+                    	if(MmouseP.left-thisP.left<0){
+                    		that.dialogBox.style.left=0
+                    	}
+                    
+					}*/
+				this.dialogtitle.onmousedown=function(event){
+			    var event=event || window.event,
+			         jsX=event.clientX-that.dialogBox.offsetLeft,
+			         jsY=event.clientY-that.dialogBox.offsetTop;/*鼠标距离盒子的*/
+			    document.onmousemove=function(event){
+			        var event=event ||window.event;
+			        var X=event.clientX,
+			            Y=event.clientY;
+			        that.dialogBox.style.left=X-jsX+"px";
+			        that.dialogBox.style.top=Y-jsY+"px";
+			         var maxL = document.documentElement.clientWidth - that.dialogBox.offsetWidth; 
+			var maxT = document.documentElement.clientHeight - that.dialogBox.offsetHeight;
+			
+			       if(that.dialogBox.offsetLeft<0){
+          			 	that.dialogBox.style.left=0;
+        			}
+			       if(that.dialogBox.offsetTop<0){
+          			 	that.dialogBox.style.top=0;
+        			}
+			
+			       if(Y-jsY>maxT){
+			       that.dialogBox.style.top=maxT+"px";
+			       }
+			       if(X-jsX>maxL){
+			       that.dialogBox.style.left=maxL+"px";
+			       }
+			       
+			       }
+						document.onmouseup=function(){
+							document.onmousemove=null;
+						}
+						
+					}
+				}
+
+			}
+			
+		</script>
+	</body>
+</html>
